@@ -34,7 +34,7 @@ public class MonthsBuilder {
      * Adding List To Map based on day count of months
      */
     private void addMonthListToMap(Map<Integer, Object> monthMap, List<Month> months) {
-        for (Month month: months) {
+        for (Month month : months) {
             List monthsBasedOnDayCount = (List) monthMap.get(month.getDayCount());
             if (monthsBasedOnDayCount == null) {
                 monthsBasedOnDayCount = new ArrayList<Month>();
@@ -58,13 +58,13 @@ public class MonthsBuilder {
     /**
      * Add months to list with years
      */
-    private void addMonthsToList (List<Month> months, int year) {
+    private void addMonthsToList(List<Month> months, int year) {
         months.add(new Month("January", 31, year));
-        months.add(new Month("February", isLeapYear(year) ? 29 : 28 , year));
+        months.add(new Month("February", isLeapYear(year) ? 29 : 28, year));
         months.add(new Month("March", 31, year));
-        months.add(new Month("April",30, year));
+        months.add(new Month("April", 30, year));
         months.add(new Month("May", 31, year));
-        months.add(new Month("June",30, year));
+        months.add(new Month("June", 30, year));
         months.add(new Month("July", 31, year));
         months.add(new Month("August", 31, year));
         months.add(new Month("September", 30, year));
@@ -84,7 +84,7 @@ public class MonthsBuilder {
      * Checking validation of year
      */
     private boolean isValid(int year) {
-        return year>0;
+        return year > 0;
     }
 
     /**
@@ -100,16 +100,28 @@ public class MonthsBuilder {
      * 3. print related months
      */
     public void prettyPrint(Map<Integer, Object> mapToPrint) {
-
-        for (int key: mapToPrint.keySet()) {
-             Map<Integer, Object> yearMap = new HashMap<Integer, Object>();
+        if (mapToPrint.containsKey(0) || mapToPrint.containsKey(1)) {
+            printError(mapToPrint);
+            return;
+        }
+        for (int key : mapToPrint.keySet()) {
+            Map<Integer, Object> yearMap = new HashMap<Integer, Object>();
             printHeader(key);
             addYearsToMap(yearMap, (List) mapToPrint.get(key));
-            for (int yearKey: yearMap.keySet()){
+            for (int yearKey : yearMap.keySet()) {
                 printMapBasedOnYear(yearKey, yearMap);
             }
             printLines("=", 36);
             System.out.println();
+        }
+    }
+
+    /*
+     * Print Errors
+     */
+    private void printError(Map<Integer, Object> mapToPrint) {
+        for (int key: mapToPrint.keySet()) {
+            System.out.println(mapToPrint.get(key));
         }
     }
 
@@ -122,7 +134,7 @@ public class MonthsBuilder {
         System.out.print(getCellWithSpace(""));
         System.out.println();
 
-        for (Month month: (List<Month>) mapToPrint.get(key)){
+        for (Month month : (List<Month>) mapToPrint.get(key)) {
             System.out.print(getCellWithSpace(""));
             System.out.print(getCellWithSpace(""));
             System.out.print(getCellWithSpace(month.getName()));
@@ -133,8 +145,8 @@ public class MonthsBuilder {
     /*
      * Adding Months to Map based on Year
      */
-    private void addYearsToMap(Map<Integer, Object> monthMap, List<Month> months){
-        for (Month month: months) {
+    private void addYearsToMap(Map<Integer, Object> monthMap, List<Month> months) {
+        for (Month month : months) {
             List monthsBasedOnYear = (List) monthMap.get(month.getYear());
             if (monthsBasedOnYear == null) {
                 monthsBasedOnYear = new ArrayList<Month>();
@@ -165,7 +177,7 @@ public class MonthsBuilder {
         System.out.print(getCellWithSpace("Months"));
         System.out.println();
         printLines("-", 36);
-        System.out.print(getCellWithSpace(dayCount+""));
+        System.out.print(getCellWithSpace(dayCount + ""));
         System.out.print(getCellWithSpace(""));
         System.out.print(getCellWithSpace(""));
         System.out.println();
@@ -184,6 +196,7 @@ public class MonthsBuilder {
     public static void main(String[] args) {
 //        System.out.println(new MonthsBuilder().getMonthMap(2000));
         MonthsBuilder monthsBuilder = new MonthsBuilder();
-        monthsBuilder.prettyPrint(monthsBuilder.getMonthMap(2000, 2010));
+        Map<Integer, Object> map = monthsBuilder.getMonthMap(2000, 2010);
+        monthsBuilder.prettyPrint(map);
     }
 }
