@@ -1,10 +1,48 @@
 package com.bizleap.training.assignment.three;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MonthBuilder {
+public class MonthsBuilder {
+
+    /**
+     * Get Month Map for a single year
+     */
+    public Map<Integer, Object> getMonthMap(int year) {
+        return getMonthMap(year, year);
+    }
+
+    /**
+     * Get Month Map within a range of years
+     */
+    public Map<Integer, Object> getMonthMap(int fromYear, int toYear) {
+        Map<Integer, Object> monthMap = new HashMap<Integer, Object>();
+        if (isValid(fromYear) && isValid(toYear) && isValid(fromYear, toYear)) {
+            addMonthListToMap(monthMap, getListWithYearRange(fromYear, toYear));
+        } else {
+            monthMap.put(0, "Input is not valid");
+        }
+        if (!isValid(fromYear, toYear)) {
+            monthMap.put(1, "From Year is greater than To Year");
+        }
+        return monthMap;
+    }
+
+    /**
+     * Adding List To Map based on day count of months
+     */
+    private void addMonthListToMap(Map<Integer, Object> monthMap, List<Month> months) {
+        for (Month month: months) {
+            List monthsBasedOnDayCount = (List) monthMap.get(month.getDayCount());
+            if (monthsBasedOnDayCount == null) {
+                monthsBasedOnDayCount = new ArrayList<Month>();
+                monthMap.put(month.getDayCount(), monthsBasedOnDayCount);
+            }
+            monthsBasedOnDayCount.add(month);
+        }
+    }
 
     /**
      * Build Months with Range
@@ -18,7 +56,7 @@ public class MonthBuilder {
     }
 
     /**
-     * Add months to list by years
+     * Add months to list with years
      */
     private void addMonthsToList (List<Month> months, int year) {
         months.add(new Month("January", 31, year));
@@ -56,8 +94,96 @@ public class MonthBuilder {
         return fromYear <= toYear;
     }
 
-    public static void main(String[] args) {
-        System.out.println(new MonthBuilder().getListWithYearRange(2000, 2003));
+    /**
+     * 1. print day count
+     * 2. print year
+     * 3. print related months
+     */
+    public void prettyPrint(Map<Integer, Object> mapToPrint) {
+
+        for (int key: mapToPrint.keySet()) {
+             Map<Integer, Object> yearMap = new HashMap<Integer, Object>();
+            printHeader(key);
+            addYearsToMap(yearMap, (List) mapToPrint.get(key));
+            for (int yearKey: yearMap.keySet()){
+                printMapBasedOnYear(yearKey, yearMap);
+            }
+            printLines("=", 36);
+            System.out.println();
+        }
     }
 
+    /*
+     * Print Map based on Year
+     */
+    private void printMapBasedOnYear(int key, Map<Integer, Object> mapToPrint) {
+        System.out.print(getCellWithSpace(""));
+        System.out.print(getCellWithSpace(key + ""));
+        System.out.print(getCellWithSpace(""));
+        System.out.println();
+
+        for (Month month: (List<Month>) mapToPrint.get(key)){
+            System.out.print(getCellWithSpace(""));
+            System.out.print(getCellWithSpace(""));
+            System.out.print(getCellWithSpace(month.getName()));
+            System.out.println();
+        }
+    }
+
+    /*
+     * Adding Months to Map based on Year
+     */
+    private void addYearsToMap(Map<Integer, Object> monthMap, List<Month> months){
+        for (Month month: months) {
+            List monthsBasedOnYear = (List) monthMap.get(month.getYear());
+            if (monthsBasedOnYear == null) {
+                monthsBasedOnYear = new ArrayList<Month>();
+                monthMap.put(month.getYear(), monthsBasedOnYear);
+            }
+            monthsBasedOnYear.add(month);
+        }
+    }
+
+    /**
+     * Generating Cell including spaces based on names
+     */
+    private String getCellWithSpace(String name) {
+        name = "|" + name;
+        for (int i = name.length(); i <= 10; i++) {
+            name += " ";
+        }
+        return name + "|";
+    }
+
+    /*
+     * Print Header
+     */
+    private void printHeader(int dayCount) {
+        printLines("=", 36);
+        System.out.print(getCellWithSpace("Day"));
+        System.out.print(getCellWithSpace("Year"));
+        System.out.print(getCellWithSpace("Months"));
+        System.out.println();
+        printLines("-", 36);
+        System.out.print(getCellWithSpace(dayCount+""));
+        System.out.print(getCellWithSpace(""));
+        System.out.print(getCellWithSpace(""));
+        System.out.println();
+    }
+
+    /*
+     * print lines based on input and count
+     */
+    private void printLines(String prefix, int count) {
+        for (int i = 0; i < count; i++) {
+            System.out.print(prefix);
+        }
+        System.out.println();
+    }
+
+    public static void main(String[] args) {
+//        System.out.println(new MonthsBuilder().getMonthMap(2000));
+        MonthsBuilder monthsBuilder = new MonthsBuilder();
+        monthsBuilder.prettyPrint(monthsBuilder.getMonthMap(2000, 2010));
+    }
 }
